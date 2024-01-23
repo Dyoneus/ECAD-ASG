@@ -5,8 +5,8 @@ session_start();
 include("header.php"); 
 ?>
 <img src="Images/welcome2mamaya.jpg" class="img-fluid" 
-     style="display:block; margin:auto;"/>
-     
+     style="display:block; margin:auto;"/>";
+
 <?php 
 // Include the Page Layout footer
 include("footer.php"); 
