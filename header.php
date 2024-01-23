@@ -18,7 +18,7 @@
         <div class="row" >
             <div class="col-sm-12" >
                 <a href="index.php">
-                <img src="Images/mamayaebooks.jpg" alt="Logo"
+                <img src="Images/florafarwest.jpg" alt="Logo"
                     class="img-fluid" style="width: 100%"/></a>
             </div>
         </div>
