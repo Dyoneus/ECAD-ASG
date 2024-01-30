@@ -41,33 +41,22 @@ function addItem() {
   	// update the quantity, else add the item to the Shopping Cart.
   	$pid = $_POST["product_id"];
 	$quantity = $_POST["quantity"];
-	$qry = "SELECT * FROM ShopCartItem WHERE ShopCartID = ? AND ProductID = ?";
+	$qry = "SELECT Quantity FROM ShopCartItem WHERE ShopCartID = ? AND ProductID = ?";
+	//$qry = "SELECT * FROM ShopCartItem WHERE ShopCartID = ? AND ProductID = ?";
 	$stmt = $conn->prepare($qry);
 	$stmt->bind_param("ii", $_SESSION["Cart"], $pid); 
 	$stmt->execute();
 	$result = $stmt->get_result();
-	$stmt->close();
-	$addNewItem = 0;
-	if ($result->num_rows > 0){ //Selected product exists in shopping cart
-		//Increase the quantity of purchase
-		$qry = "UPDATE ShopCartItem SET Quantity=LEAST(Quantity+?, 10)
-				WHERE ShopCartID=? AND ProductID=?";
-		$stmt = $conn->prepare($qry);
-		$stmt->bind_param("iii", $quantity, $_SESSION["Cart"], $pid);
-		$stmt->execute();
-		if ($stmt->affected_rows > 0){
-			// Check if this is a new item or an update to an existing item
-			if ($addNewItem == 1) {
-				// New item added
-				$_SESSION["NumCartItem"] = isset($_SESSION["NumCartItem"]) ? $_SESSION["NumCartItem"] + $quantity : $quantity;
-			} else {
-				// Existing item's quantity updated
-				$_SESSION["NumCartItem"] += $quantity;
-			}
-		}
-		$stmt->close();
-	}
-	else{
+	if ($result->num_rows > 0) { // Selected product exists in shopping cart
+        $row = $result->fetch_assoc();
+        $newQty = $row["Quantity"] + $quantity;
+        // Update the quantity of the existing item
+        $qry = "UPDATE ShopCartItem SET Quantity=? WHERE ShopCartID=? AND ProductID=?";
+        $stmt = $conn->prepare($qry);
+        $stmt->bind_param("iii", $newQty, $_SESSION["Cart"], $pid);
+        $stmt->execute();
+        $stmt->close();
+    } else {
 		$qry = "INSERT INTO ShopCartItem(ShopCartID, ProductID, Price, Name, Quantity)
 				SELECT ?, ?, Price, ProductTitle, ? FROM Product WHERE ProductID = ?";		
 		$stmt = $conn->prepare($qry);
@@ -77,18 +66,31 @@ function addItem() {
 		$stmt->close();
 		$addNewItem = 1;	
 	}
-  	$conn->close();
-  	// Update session variable used for counting number of items in the shopping cart.
-	if(isset($_SESSION["NumCartItem"])){
-		$_SESSION["NumCartItem"] = $_SESSION["NumCartItem"] + $addNewItem;
-	}
-	else{
-		$_SESSION["NumCartItem"] = 1;
-	}
+  	
+
+	// Recalculate the total number of items in the cart
+    recalculateCartItemCount($conn);
+	
+	$conn->close();
+
 	// Redirect shopper to shopping cart page
-	header("Location: shoppingCart.php");
-	exit;
+    header("Location: shoppingCart.php");
+    exit;
+
 }
+
+// Function to recalculate the total item count in the cart
+function recalculateCartItemCount($conn) {
+    $qry = "SELECT SUM(Quantity) AS ItemCount FROM ShopCartItem WHERE ShopCartID = ?";
+    $stmt = $conn->prepare($qry);
+    $stmt->bind_param("i", $_SESSION["Cart"]);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    $_SESSION["NumCartItem"] = $row["ItemCount"];
+    $stmt->close();
+}
+
 
 function updateItem() {
 	// Check if shopping cart exists 
@@ -109,6 +111,10 @@ function updateItem() {
 	$stmt->bind_param("iii", $quantity, $pid, $cartid); // i - integer
 	$stmt->execute();
 	$stmt->close();
+	
+
+	// Recalculate the total number of items in the cart
+    recalculateCartItemCount($conn);
 	$conn->close();
 	header("Location: shoppingCart.php");
 	exit;
@@ -126,12 +132,13 @@ function removeItem() {
 	$cartid = $_SESSION["Cart"];
 	$pid = $_POST["product_id"];
 	include_once("mysql_conn.php"); // Establish database connection handle: $conn
+
 	$qry = "DELETE FROM shopcartitem WHERE ProductID = ? AND ShopCartID = ?";
 	$stmt = $conn->prepare($qry);
 	$stmt->bind_param("ii", $pid, $cartid); // ii - integer
 	$stmt->execute();
 	$stmt->close();
-	$conn->close();
+	
 
 	if(isset($_SESSION["NumCartItem"])){
 		$_SESSION["NumCartItem"] = $_SESSION["NumCartItem"] - 1;
@@ -139,6 +146,10 @@ function removeItem() {
 	else{
 		$_SESSION["NumCartItem"] = 0;
 	}
+
+	// Recalculate the total number of items in the cart
+	recalculateCartItemCount($conn);
+	$conn->close();
 
 	header("Location: shoppingCart.php");
 	exit;

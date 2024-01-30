@@ -97,14 +97,6 @@ if (isset($_SESSION["Cart"])) {
 		echo "</tbody>"; // End of table's body section
 		echo "</table>"; // End of table
 		echo "</div>"; // End of Bootstrap responsive table
-				
-		// To Do 4 (Practical 4): 
-		// Display the subtotal at the end of the shopping cart
-		/*
-		echo "<p style='text-align:right; font-size:20px'>
-			  Subtotal = S$" . number_format($subTotal, 2);
-		$_SESSION["SubTotal"] = round($subTotal, 2);	
-		*/
 		
 		// Check if delivery charge should be waived
 		if ($subTotal > 200) {
