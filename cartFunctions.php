@@ -55,6 +55,16 @@ function addItem() {
 		$stmt = $conn->prepare($qry);
 		$stmt->bind_param("iii", $quantity, $_SESSION["Cart"], $pid);
 		$stmt->execute();
+		if ($stmt->affected_rows > 0){
+			// Check if this is a new item or an update to an existing item
+			if ($addNewItem == 1) {
+				// New item added
+				$_SESSION["NumCartItem"] = isset($_SESSION["NumCartItem"]) ? $_SESSION["NumCartItem"] + $quantity : $quantity;
+			} else {
+				// Existing item's quantity updated
+				$_SESSION["NumCartItem"] += $quantity;
+			}
+		}
 		$stmt->close();
 	}
 	else{

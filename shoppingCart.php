@@ -46,6 +46,8 @@ if (isset($_SESSION["Cart"])) {
 		// To Do 3 (Practical 4): 
 		// Display the shopping cart content
 		$subTotal = 0; // Declare a variable to compute subtotal before tax
+		$totalItems = 0; // Variable to store the total number of items
+		$deliveryChargeWaived = false; // Flag for waiving delivery charge
 		echo "<tbody>"; // Start of table's body section
 		while ($row = $result->fetch_array()) {
 			echo "<tr>";
@@ -89,16 +91,32 @@ if (isset($_SESSION["Cart"])) {
 
 			// Accumulate the running sub-total
 			$subTotal += $row["Total"];
+			$totalItems += $row["Quantity"];
 		}
+
 		echo "</tbody>"; // End of table's body section
 		echo "</table>"; // End of table
 		echo "</div>"; // End of Bootstrap responsive table
 				
 		// To Do 4 (Practical 4): 
 		// Display the subtotal at the end of the shopping cart
+		/*
 		echo "<p style='text-align:right; font-size:20px'>
 			  Subtotal = S$" . number_format($subTotal, 2);
-		$_SESSION["SubTotal"] = round($subTotal, 2);	  
+		$_SESSION["SubTotal"] = round($subTotal, 2);	
+		*/
+		
+		// Check if delivery charge should be waived
+		if ($subTotal > 200) {
+			$deliveryChargeWaived = true;
+			echo "<div style='text-align:right; color: green; font-size: 18px; margin-top: 10px;'>";
+			echo "Congratulations! Your delivery charge has been waived.";
+			echo "</div>";
+		}
+		// Display subtotal and total items
+		echo "<p style='text-align:right; font-size:20px'>
+		Subtotal = S$" . number_format($subTotal, 2) . "<br/>";
+		//echo "Total Items = " . $totalItems . "</p>";
 		
 		// To Do 7 (Practical 5):
 		// Add PayPal Checkout button on the shopping cart page
