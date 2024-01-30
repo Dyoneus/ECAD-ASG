@@ -157,7 +157,9 @@ if (isset($_SESSION["Cart"])) {
 		echo "GST (" . number_format($gstRate * 100, 0) . "%) = S$" . number_format($gstAmount, 2) . "<br>";
 		echo "Total = S$" . number_format($totalAmt, 2) . "</p>";
 
-		$_SESSION["SubTotal"] = round($subTotal, 2);  
+		$_SESSION["SubTotal"] = round($subTotal, 2);
+		$_SESSION["GST"] = $gstRate;
+		$_SESSION["ShipCharge"] = $shipCharge;
 		
 		// To Do 7 (Practical 5):
 		// Add PayPal Checkout button on the shopping cart page
