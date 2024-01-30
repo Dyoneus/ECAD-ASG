@@ -46,9 +46,6 @@ if (isset($_SESSION["Cart"])) {
 		// To Do 3 (Practical 4): 
 		// Display the shopping cart content
 		$subTotal = 0; // Declare a variable to compute subtotal before tax
-		$totalItems = 0; // Variable to store the total number of items
-		$shipChargeWaived = false; // Flag for waiving delivery charge
-
 		echo "<tbody>"; // Start of table's body section
 		while ($row = $result->fetch_array()) {
 			echo "<tr>";
@@ -96,6 +93,10 @@ if (isset($_SESSION["Cart"])) {
 		echo "</tbody>"; // End of table's body section
 		echo "</table>"; // End of table
 		echo "</div>"; // End of Bootstrap responsive table
+		
+		// Calculate GST and delivery charge (no changes needed here)
+		$gst = 0.07; // 7% GST
+		$gstAmount = $subTotal * $gst;
 
 		// Check if delivery charge should be waived
 		if ($subTotal > 200) {
@@ -108,20 +109,16 @@ if (isset($_SESSION["Cart"])) {
 			$shipChargeWaived = false;
 			$shipCharge = 5.00;  // Fixed delivery charge if not waived
 		}
-
-		// Calculate GST and delivery charge (no changes needed here)
-		$tax = 0.07; // 7% GST
-		$gstAmount = $subTotal * $tax;
-		$subTotal += $gstAmount;
-		$subTotal += $shipCharge;
-
-		// Display the subtotal, GST, delivery charge, and total
+		
+		// To Do 4 (Practical 4): 
+		// Display the subtotal at the end of the shopping cart
 		echo "<p style='text-align:right; font-size:20px'>
-			  Subtotal = S$" . number_format($subTotal - $gstAmount - $shipCharge, 2) . "<br>";
+			  Subtotal = S$" . number_format($subTotal, 2) . "<br>";
 		echo "GST (7%) = S$" . number_format($gstAmount, 2) . "<br>";
 		echo "Delivery Charge = S$" . number_format($shipCharge, 2) . "<br>";
 		echo "Total = S$" . number_format($subTotal, 2) . "</p>";
-
+		$_SESSION["SubTotal"] = round($subTotal, 2);	  
+		
 		// To Do 7 (Practical 5):
 		// Add PayPal Checkout button on the shopping cart page
 		echo "<form method='post' action='checkoutProcess.php'>";
