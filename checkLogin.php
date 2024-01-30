@@ -28,26 +28,26 @@ if ($result->num_rows == 0) {
     $_SESSION["ShopperID"] = $row["ShopperID"];
 
   // To Do 2 (Practical 4): Get active shopping cart
-  $qry = 'SELECT sc.ShopCartID, COUNT(sci.ProductID) AS NumItems
-      FROM ShopCart sc LEFT JOIN ShopCartItem sci
-      ON sc.ShopCartID=sci.ShopCartID
-      WHERE sc.ShopperID=? AND sc.OrderPlaced=0';
-  
+  $qry = 'SELECT sc.ShopCartID, IFNULL(SUM(sci.Quantity), 0) AS TotalQuantity
+        FROM ShopCart sc LEFT JOIN ShopCartItem sci
+        ON sc.ShopCartID = sci.ShopCartID
+        WHERE sc.ShopperID = ? AND sc.OrderPlaced = 0
+        GROUP BY sc.ShopCartID';
+
   $stmt = $conn->prepare($qry);
   $stmt->bind_param("i", $_SESSION["ShopperID"]);
   $stmt->execute();
   $result = $stmt->get_result();
-  
-  if ($stmt -> execute()){
-    $result = $stmt->get_result();
-    if ($result->num_rows != 0){
-      while($row = $result->fetch_array()){
-        $_SESSION["NumCartItem"] = $row["NumItems"];	
-        $_SESSION["Cart"] = $row["ShopCartID"];
-      }
-    }
+
+  if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    $_SESSION["NumCartItem"] = $row["TotalQuantity"];
+    $_SESSION["Cart"] = $row["ShopCartID"];
+  } else {
+      // If no cart exists, set NumCartItem to 0
+      $_SESSION["NumCartItem"] = 0;
   }
-  
+
   $stmt->close();
   $conn->close();
 
