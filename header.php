@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Mamaya e-BookStore</title>
+<title>FLoraFarWest</title>
 <!-- Latest Compiled and Manified CSS -->
 <link rel="stylesheet" href="css/bootstrap.min.css">
 <!-- Link to compiled Bookstrap JavaScript downloaded -->
