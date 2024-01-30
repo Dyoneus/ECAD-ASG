@@ -57,11 +57,29 @@ while ($row = $result->fetch_array()) {
     $formattedPrice = number_format($row["Price"], 2);
     echo "Price: <span style='font-weight:bold; color:red; '>
         S$ $formattedPrice</span>";
+
+if ($row["Quantity"] <= 0) {
+    // Out of Stock indicator and disable the Add to Cart button
+    echo "<p style='color:red;'>Out of Stock</p>";
+    echo "<button type='button' disabled>Add to Cart</button>";
+} else {
+    // Display the form for adding the product to the shopping cart
+    echo "<form action='cartFunctions.php' method='post'>";
+    echo "<input type='hidden' name='action' value='add' />";
+    echo "<input type='hidden' name='product_id' value='$pid' />";
+    echo "Quantity: <input type='number' name='quantity' value='1'
+        min='1' max='10' style='width:40px' required />";
+    echo "<button type='submit'>Add to Cart</button>";
+    echo "</form>";
 }
+
+echo "</div>"; // End of right column
+echo "</div>"; // End of row
+
 // To Do 1:  Ending ....
 
 // To Do 2:  Create a Form for adding the product to shopping cart. Starting ....
-echo "<form action='cartFunctions.php' method='post'>";
+/*echo "<form action='cartFunctions.php' method='post'>";
 echo "<input type='hidden' name='action' value='add' />";
 echo "<input type='hidden' name='product_id' value='$pid' />";
 echo "Quantity: <input type='number' name='quantity' value='1'
@@ -69,10 +87,11 @@ echo "Quantity: <input type='number' name='quantity' value='1'
 echo "<button type='submit'>Add to Cart</button>";
 echo "</form>";
 echo "</div>"; // End of right column
-echo "</div>"; // End of row
+echo "</div>"; // End of row*/
 // To Do 2:  Ending ....
 
 $conn->close(); // Close database connnection
 echo "</div>"; // End of container
 include("footer.php"); // Include the Page Layout footer
+}
 ?>
