@@ -47,8 +47,8 @@ if (isset($_SESSION["Cart"])) {
 		// Display the shopping cart content
 		$subTotal = 0; // Declare a variable to compute subtotal before tax
 		$totalItems = 0; // Variable to store the total number of items
-		$deliveryChargeWaived = false; // Flag for waiving delivery charge
-		
+		$shipChargeWaived = false; // Flag for waiving delivery charge
+
 		echo "<tbody>"; // Start of table's body section
 		while ($row = $result->fetch_array()) {
 			echo "<tr>";
@@ -97,32 +97,30 @@ if (isset($_SESSION["Cart"])) {
 		echo "</table>"; // End of table
 		echo "</div>"; // End of Bootstrap responsive table
 
-		// Calculate GST and delivery charge
-		$gstRate = 0.07; // 7% GST
-		$deliveryCharge = 5.00; // Fixed delivery charge
-		$gstAmount = $subTotal * $gstRate;
-		$subTotal += $gstAmount;
-		$subTotal += $deliveryCharge;
-
-		// Display the subtotal, GST, delivery charge, and total
-		echo "<p style='text-align:right; font-size:20px'>
-			  Subtotal = S$" . number_format($subTotal - $gstAmount - $deliveryCharge, 2) . "<br>";
-		echo "GST (7%) = S$" . number_format($gstAmount, 2) . "<br>";
-		echo "Delivery Charge = S$" . number_format($deliveryCharge, 2) . "<br>";
-		echo "Total = S$" . number_format($subTotal, 2) . "</p>";
-
 		// Check if delivery charge should be waived
 		if ($subTotal > 200) {
-			$deliveryChargeWaived = true;
+			$shipChargeWaived = true;
 			echo "<div style='text-align:right; color: green; font-size: 18px; margin-top: 10px;'>";
 			echo "Congratulations! Your delivery charge has been waived.";
 			echo "</div>";
+			$shipCharge = 0;  // Set shipCharge to 0 if waived
+		} else {
+			$shipChargeWaived = false;
+			$shipCharge = 5.00;  // Fixed delivery charge if not waived
 		}
 
-		// Display subtotal and total items
+		// Calculate GST and delivery charge (no changes needed here)
+		$tax = 0.07; // 7% GST
+		$gstAmount = $subTotal * $tax;
+		$subTotal += $gstAmount;
+		$subTotal += $shipCharge;
+
+		// Display the subtotal, GST, delivery charge, and total
 		echo "<p style='text-align:right; font-size:20px'>
-		Subtotal = S$" . number_format($subTotal, 2) . "<br/>";
-		//echo "Total Items = " . $totalItems . "</p>";
+			  Subtotal = S$" . number_format($subTotal - $gstAmount - $shipCharge, 2) . "<br>";
+		echo "GST (7%) = S$" . number_format($gstAmount, 2) . "<br>";
+		echo "Delivery Charge = S$" . number_format($shipCharge, 2) . "<br>";
+		echo "Total = S$" . number_format($subTotal, 2) . "</p>";
 
 		// To Do 7 (Practical 5):
 		// Add PayPal Checkout button on the shopping cart page
