@@ -1,0 +1,57 @@
+/* Style for header row */
+.header-row {
+    margin-bottom: 20px;
+}
+
+/* Style for category box */
+.category-box {
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+/* Responsive styling for smaller screens */
+@media (max-width: 767px) {
+    .category-box {
+        width: 100%;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Style for product-item */
+.product-item {
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+/* Style for down-content */
+.down-content {
+    text-align: center;
+}
+
+/* Responsive styling for smaller screens */
+@media (max-width: 767px) {
+    .product-item {
+        width: 100%;
+    }
+}
+
+p {
+    font-family: 'Poppins', sans-serif;
+}
+body {
+    font-family : 'Poppins', sans-serif;
+    font-size : 14px;
+}
