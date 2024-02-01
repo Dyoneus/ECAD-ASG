@@ -108,11 +108,11 @@ if (isset($_SESSION["Cart"])) {
 		echo "</table>"; // End of table
 		echo "</div>"; // End of Bootstrap responsive table
 
-		// Check if delivery charge should be waived for orders above $300
-		if ($subTotal > 300) {
+		// Check if delivery charge should be waived for orders $300 and above
+		if ($subTotal >= 300) {
 			$shipCharge = 0;  // Set shipCharge to 0 if waived
 			echo "<div style='text-align:right; color: green; font-size: 18px; margin-top: 10px;'>";
-			echo "Congratulations! Your delivery charge has been waived.";
+			echo "Congratulations! Your delivery charge has been waived and will be delivered through express delivery.";
 			echo "</div>";
 		} else {
 			echo "<div style='text-align:right; font-size:15px; margin-top:20px;'>";

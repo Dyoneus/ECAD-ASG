@@ -44,8 +44,6 @@ if($_POST) //Post Data received from Shopping cart page.
 	$stmt->close();
 	// End of To Do 6
 
-
-	
 	$paypal_data = '';
 	// Get all items from the shopping cart, concatenate to the variable $paypal_data
 	// $_SESSION['Items'] is an associative array
@@ -56,7 +54,7 @@ if($_POST) //Post Data received from Shopping cart page.
 		$paypal_data .= '&L_PAYMENTREQUEST_0_NUMBER'.$key.'='.urlencode($item["productId"]);
 	}
 	
-	// To Do 1A: Compute GST amount 7% for Singapore, round the figure to 2 decimal places
+	// To Do 1A: Compute GST amount % for Singapore, round the figure to 2 decimal places
 	$_SESSION["Tax"] = round(($_SESSION["SubTotal"] + $_SESSION["ShipCharge"])*$_SESSION["GST"], 2); 
     // Retrieve GST amount and shipping charge from session
     $gstAmount = isset($_SESSION["GSTAmount"]) ? $_SESSION["GST"] : 0;
