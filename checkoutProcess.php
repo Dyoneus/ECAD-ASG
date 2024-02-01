@@ -43,6 +43,8 @@ if($_POST) //Post Data received from Shopping cart page.
 	
 	$stmt->close();
 	// End of To Do 6
+
+
 	
 	$paypal_data = '';
 	// Get all items from the shopping cart, concatenate to the variable $paypal_data
@@ -55,10 +57,14 @@ if($_POST) //Post Data received from Shopping cart page.
 	}
 	
 	// To Do 1A: Compute GST amount 7% for Singapore, round the figure to 2 decimal places
-	$_SESSION["Tax"] = round($_SESSION["SubTotal"]*0.07, 2); 
+	$_SESSION["Tax"] = round(($_SESSION["SubTotal"] + $_SESSION["ShipCharge"])*$_SESSION["GST"], 2); 
+    // Retrieve GST amount and shipping charge from session
+    $gstAmount = isset($_SESSION["GSTAmount"]) ? $_SESSION["GST"] : 0;
+    $shipCharge = isset($_SESSION["ShippingCharge"]) ? $_SESSION["ShipCharge"] : 0;
+
 	
 	// To Do 1B: Compute Shipping charge - S$2.00 per trip
-	$_SESSION["ShipCharge"] = 2.00;	
+	$_SESSION["ShipCharge"] = $_SESSION["ShipCharge"];
 	
 	//Data to be sent to PayPal
 	$padata = '&CURRENCYCODE='.urlencode($PayPalCurrencyCode).
@@ -66,8 +72,8 @@ if($_POST) //Post Data received from Shopping cart page.
 			  '&ALLOWNOTE=1'.
 			  '&PAYMENTREQUEST_0_CURRENCYCODE='.urlencode($PayPalCurrencyCode).
 			  '&PAYMENTREQUEST_0_AMT='.urlencode($_SESSION["SubTotal"] +
-				                                 $_SESSION["Tax"] + 
-												 $_SESSION["ShipCharge"]).
+												 $_SESSION["ShipCharge"]) +
+												 $_SESSION["Tax"] .
 			  '&PAYMENTREQUEST_0_ITEMAMT='.urlencode($_SESSION["SubTotal"]). 
 			  '&PAYMENTREQUEST_0_SHIPPINGAMT='.urlencode($_SESSION["ShipCharge"]). 
 			  '&PAYMENTREQUEST_0_TAXAMT='.urlencode($_SESSION["Tax"]). 	

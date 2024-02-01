@@ -12,9 +12,21 @@ if (! isset($_SESSION["ShopperID"])) { // Check if user logged in
 
 echo "<div id='myShopCart' style='margin:auto'>"; // Start a container
 if (isset($_SESSION["Cart"])) {
-	include_once("mysql_conn.php");
-	// To Do 1 (Practical 4): 
-	// Retrieve from database and display shopping cart in a table
+    include_once("mysql_conn.php");
+
+    // Retrieve the latest GST rate applicable as of today
+    $currentDate = date("Y-m-d");
+    $gstQuery = "SELECT TaxRate FROM gst WHERE EffectiveDate <= ? ORDER BY EffectiveDate DESC LIMIT 1";
+    $gstStmt = $conn->prepare($gstQuery);
+    $gstStmt->bind_param("s", $currentDate); // 's' for string type
+    $gstStmt->execute();
+    $gstResult = $gstStmt->get_result();
+    $gstRate = 0.07; // Default GST rate
+    if ($gstRow = $gstResult->fetch_assoc()) {
+        $gstRate = $gstRow["TaxRate"] / 100;
+    }
+    $gstStmt->close();
+
 	$qry = "SELECT *, (Price*Quantity) AS Total
 			FROM ShopCartItem WHERE ShopCartID=?";
 	$stmt = $conn->prepare($qry);
@@ -45,9 +57,8 @@ if (isset($_SESSION["Cart"])) {
 
 		// To Do 3 (Practical 4): 
 		// Display the shopping cart content
-		$subTotal = 0; // Declare a variable to compute subtotal before tax
-		$totalItems = 0; // Variable to store the total number of items
-		$shipChargeWaived = false; // Flag for waiving delivery charge
+		$subTotal = 0; // Declare a variable to compute subtotal before everything
+		$totalAmt = 0; // Declare a variable to compute subtotal after everything
 
 		echo "<tbody>"; // Start of table's body section
 		while ($row = $result->fetch_array()) {
@@ -97,31 +108,59 @@ if (isset($_SESSION["Cart"])) {
 		echo "</table>"; // End of table
 		echo "</div>"; // End of Bootstrap responsive table
 
-		// Check if delivery charge should be waived
-		if ($subTotal > 200) {
-			$shipChargeWaived = true;
+		// Check if delivery charge should be waived for orders above $300
+		if ($subTotal > 300) {
+			$shipCharge = 0;  // Set shipCharge to 0 if waived
 			echo "<div style='text-align:right; color: green; font-size: 18px; margin-top: 10px;'>";
 			echo "Congratulations! Your delivery charge has been waived.";
 			echo "</div>";
-			$shipCharge = 0;  // Set shipCharge to 0 if waived
 		} else {
-			$shipChargeWaived = false;
-			$shipCharge = 5.00;  // Fixed delivery charge if not waived
+			echo "<div style='text-align:right; font-size:15px; margin-top:20px;'>";
+			echo "<form action='' method='post' id='deliveryOptionForm'>"; // Form submits to the same page
+			echo "<strong>Select your delivery option:</strong><br>";
+			echo "<select name='delivery_option' onchange='document.getElementById(\"deliveryOptionForm\").submit();' style='margin-top:10px; margin-bottom:10px;'>";
+			
+			// Check which option was previously selected
+			$selectedStandard = 'selected';
+			$selectedExpress = '';
+			if (isset($_POST['delivery_option']) && $_POST['delivery_option'] == 'express') {
+				$selectedExpress = 'selected';
+				$selectedStandard = '';
+			}
+			
+			// Add tooltips for each delivery option
+			$standardDeliveryTooltip = "title='Standard Delivery: \$5 per trip, within 2 working days after an order is placed'";
+			$expressDeliveryTooltip = "title='Express Delivery: \$10 per trip, delivered within 24 hours after an order is placed'";
+			
+			echo "<option value='standard' $selectedStandard $standardDeliveryTooltip>Standard Delivery ($5)</option>";
+			echo "<option value='express' $selectedExpress $expressDeliveryTooltip>Express Delivery ($10)</option>";
+			echo "</select><br>";
+			echo "</form>";
+			echo "</div>";			
+			
+			// Determine shipping charge based on selection
+			$shipCharge = 5.00; // Default to standard shipping
+			if (isset($_POST['delivery_option']) && $_POST['delivery_option'] == 'express') {
+				$shipCharge = 10.00;
+			}
 		}
 
-		// Calculate GST and delivery charge (no changes needed here)
-		$tax = 0.07; // 7% GST
-		$gstAmount = $subTotal * $tax;
-		$subTotal += $gstAmount;
-		$subTotal += $shipCharge;
+		// Calculate GST and delivery charge
+		$gstAmount = ($subTotal + $shipCharge) * $gstRate;
+		$totalAmt = $subTotal + $shipCharge + $gstAmount;
 
-		// Display the subtotal, GST, delivery charge, and total
-		echo "<p style='text-align:right; font-size:20px'>
-			  Subtotal = S$" . number_format($subTotal - $gstAmount - $shipCharge, 2) . "<br>";
-		echo "GST (7%) = S$" . number_format($gstAmount, 2) . "<br>";
+		// Display the subtotal at the end of the shopping cart
+		echo "<p style='text-align:right; font-size:20px; margin-top:10px;'>";
+		echo "Subtotal = S$" . number_format($subTotal, 2) . "<br>";
 		echo "Delivery Charge = S$" . number_format($shipCharge, 2) . "<br>";
-		echo "Total = S$" . number_format($subTotal, 2) . "</p>";
+		// Display the GST rate dynamically
+		echo "GST (" . number_format($gstRate * 100, 0) . "%) = S$" . number_format($gstAmount, 2) . "<br>";
+		echo "Total = S$" . number_format($totalAmt, 2) . "</p>";
 
+		$_SESSION["SubTotal"] = round($subTotal, 2);
+		$_SESSION["GST"] = $gstRate;
+		$_SESSION["ShipCharge"] = $shipCharge;
+		
 		// To Do 7 (Practical 5):
 		// Add PayPal Checkout button on the shopping cart page
 		echo "<form method='post' action='checkoutProcess.php'>";

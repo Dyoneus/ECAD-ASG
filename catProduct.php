@@ -23,17 +23,16 @@ $qry = "SELECT p.ProductID, p.ProductTitle, p.ProductImage, p.Price, p.Quantity,
 		FROM CatProduct cp INNER JOIN product p ON cp.ProductID=p.ProductID
 		WHERE cp.CategoryID=? ORDER BY ProductTitle";
 $stmt = $conn->prepare($qry);
-$stmt->bind_param("i", $cid);
+$stmt->bind_param("i", $cid); // "i" - integer
 $stmt->execute();
 $result = $stmt->get_result();
 $stmt->close();
 
-
+// Display each product in a row
 while ($row = $result->fetch_array()) {
-	echo "<div class='row' style='padding:5px'>";
-
-
-
+	echo "<div class='row' style='padding:5px'>"; // Start a new row
+	// Left column - display a text link showing the product's name,
+	// 				 display the selling price in red in a new paragraph
 	$product = "productDetails.php?pid=$row[ProductID]";
 	$formattedPrice = number_format($row["Price"], 2);
 	echo "<div class='col-8'>";
@@ -45,16 +44,16 @@ while ($row = $result->fetch_array()) {
     }
 
 	echo "Price:<span style='font-weight: bold; color: red;'>
-		  S$ $formattedPrice</span>";
+			S$ $formattedPrice</span>";
 	echo "</div>";
 
+	// Right column - display the product's image
+	$img = "./Images/products/$row[ProductImage]" ;
+	echo "<div class='co1-4'>"; // 33% of row width
+	echo "<img src='$img'/>";
+	echo "</div›";
 
-	$img = "./Images/products/$row[ProductImage]";
-	echo "<div class='col-4'>";
-	echo "<img src='$img' />";
-	echo "</div>";
-
-	echo "</div>";
+	echo "</div>"; // End of a row
 }
 // To Do:  Ending ....
 
