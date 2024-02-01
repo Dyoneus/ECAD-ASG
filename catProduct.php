@@ -19,7 +19,7 @@ include_once("mysql_conn.php");
 // To Do:  Starting ....
 $cid=$_GET["cid"];
 
-$qry = "SELECT p.ProductID, p.ProductTitle, p.ProductImage, p.Price, p.Quantity
+$qry = "SELECT p.ProductID, p.ProductTitle, p.ProductImage, p.Price, p.Quantity, p.Offered
 		FROM CatProduct cp INNER JOIN product p ON cp.ProductID=p.ProductID
 		WHERE cp.CategoryID=? ORDER BY ProductTitle";
 $stmt = $conn->prepare($qry);
@@ -38,6 +38,12 @@ while ($row = $result->fetch_array()) {
 	$formattedPrice = number_format($row["Price"], 2);
 	echo "<div class='col-8'>";
 	echo "<p><a href=$product>$row[ProductTitle]</a></p>";
+
+	//Offer Indicator
+	if ($row['Offered'] == 1) {
+        echo "<span style='color: red;'>On Offer</span><br/>";
+    }
+
 	echo "Price:<span style='font-weight: bold; color: red;'>
 		  S$ $formattedPrice</span>";
 	echo "</div>";

@@ -48,15 +48,26 @@ while ($row = $result->fetch_array()) {
     }
     echo "</div>"; // End of left column
 
+    //Offer Indicator
+    echo "<div class='col-sm-9' style='padding: 5px'>";
+    $formattedOriginalPrice = number_format($row["Price"], 2);
+    $formattedPrice = number_format($row["OfferedPrice"], 2);
+    if ($row['Offered'] == 1) {
+        // Display the original price with a strike-through
+        echo "<span style='color: red;'>On Offer</span><br/>";
+        echo "Original Price: <span style='font-weight:bold; text-decoration: line-through; color: grey;'>S$ $formattedOriginalPrice</span><br/>";
+        echo "Offer Price: <span style='font-weight:bold; color:red; '> S$ $formattedPrice</span>";
+    } else {
+        // Display the regular price
+        echo "Price: <span style='font-weight:bold; color:red; '>S$ $formattedOriginalPrice</span>";
+    }
     // Right column - display the product's image
     $img = "./Images/products/$row[ProductImage]";
     echo "<div class='col-sm-3' style='vertical-align:top; padding:5px'>"; 
     echo "<p><img src=$img /></p>";
-
+    echo "</div>";
     // Right column - display the product's price
-    $formattedPrice = number_format($row["Price"], 2);
-    echo "Price: <span style='font-weight:bold; color:red; '>
-        S$ $formattedPrice</span>";
+
 
 if ($row["Quantity"] <= 0) {
     // Out of Stock indicator and disable the Add to Cart button
