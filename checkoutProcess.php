@@ -27,12 +27,12 @@ if($_POST) //Post Data received from Shopping cart page.
 				$quantityInStock = $row['Quantity'];
 				
 				// Enhanced "Out of Stock" notification with Bootstrap alert
-				echo "<div class='alert alert-warning' role='alert'>";
-				echo "<h4 class='alert-heading'>Out of Stock!</h4>";
-				echo "<p>Product $pID: <strong>$pTitle</strong> is currently out of stock.</p>";
-				echo "<p>Please return to your <a href='shoppingCart.php'>shopping cart</a> to amend your purchase. Thank you.</p>";
+				echo "<div class='alert alert-warning text-center' role='alert'>";
+				echo "<h4 class='alert-heading'>Not Enough Stock!</h4>";
+				echo "<p>Product $pID: <strong>$pTitle</strong> has currently not enough stock.</p>";
+				echo "<p>In stock: <strong>$quantityInStock</strong> | You ordered: <strong>$intvalue</strong></p>";
 				echo "<hr>";
-				echo "<p class='mb-0'>In stock: <strong>$quantityInStock</strong> | You ordered: <strong>$intvalue</strong></p>";
+				echo "<p class='mb-0'>Please return to your <a href='shoppingCart.php'>shopping cart</a> to amend your purchase. Thank you.</p>";
 				echo "</div>";
 				
 				$exit = true;

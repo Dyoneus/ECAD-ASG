@@ -169,12 +169,24 @@ if (isset($_SESSION["Cart"])) {
 		echo "</form></p>";		
 	}
 	else {
-		echo "<h3 style='text-align:center; color:red;'>Empty shopping cart!</h3>";
+		// Bootstrap styled empty cart notification
+		echo "<div class='alert alert-info text-center' role='alert'>";
+		echo "<h4 class='alert-heading'>Your Shopping Cart is Empty!</h4>";
+		echo "<p>You have no items in your shopping cart.</p>";
+		echo "<hr>";
+		echo "<p class='mb-0'>Start adding products to your cart from our <a href='category.php'>products page</a>.</p>";
+		echo "</div>";
 	}
 	$conn->close(); // Close database connection
 }
 else {
-	echo "<h3 style='text-align:center; color:red;'>Empty shopping cart!</h3>";
+    // Bootstrap styled empty cart notification
+    echo "<div class='alert alert-info text-center' role='alert'>";
+    echo "<h4 class='alert-heading'>Your Shopping Cart is Empty!</h4>";
+    echo "<p>You have no items in your shopping cart.</p>";
+    echo "<hr>";
+    echo "<p class='mb-0'>Start adding products to your cart from our <a href='category.php'>products page</a>.</p>";
+    echo "</div>";
 }
 echo "</div>"; // End of container
 include("footer.php"); // Include the Page Layout footer
