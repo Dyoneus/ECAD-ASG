@@ -5,97 +5,67 @@ session_start();
 include("header.php"); 
 ?>
 <script type="text/javascript">
-function validateForm()
-{
-    // To Do 1 - Check if password matched
-	if (document.register.password.value != document.register.password2.value){
-        alert("Passwords not matched!");
+function validateForm() {
+    // Check if password matched
+    if (document.register.password.value != document.register.password2.value) {
+        alert("Passwords do not match!");
         return false;
     }
-	// To Do 2 - Check if telephone number entered correctly
-	//           Singapore telephone number consists of 8 digits,
-	//           start with 6, 8 or 9
-    if (document.register.phone.value != ""){
+    // Check if telephone number is entered correctly
+    if (document.register.phone.value != "") {
         var str = document.register.phone.value;
-        if (str.length != 8){
-            alert("Please enter a 8-digit phone number.");
+        if (str.length != 8) {
+            alert("Please enter an 8-digit phone number.");
             return false;
-        }
-        else if(str.substr(0,1) != "6" &&
-                str.substr(0,1) != "8" &&
-                str.substr(0,1) != "9"){
-        alert("Phone number in Singapore should start with 6, 8 or 9.");
-        return false; //Cancel submission        
+        } else if (str.substr(0,1) != "6" && str.substr(0,1) != "8" && str.substr(0,1) != "9") {
+            alert("Phone number in Singapore should start with 6, 8 or 9.");
+            return false;        
         }
     }
-    return true;  // No error found
+    return true; // No error found
 }
 </script>
 
-<div style="width:80%; margin:auto;">
-<form name="register" action="addMember.php" method="post" 
-      onsubmit="return validateForm()">
-    <div class="form-group row">
-        <div class="col-sm-9 offset-sm-3">
-            <span class="page-title">Membership Registration</span>
+<!-- Central container for the form -->
+<div class="container">
+    <form name="register" action="addMember.php" method="post" onsubmit="return validateForm()" class="border p-4 bg-light shadow">
+        <div class="text-center mb-4">
+            <h2 class="page-title">Member Registration</h2>
+            <p class="lead">Join our community. It only takes a minute.</p>
         </div>
-    </div>
-    <div class="form-group row">
-        <label class="col-sm-3 col-form-label" for="name">Name:</label>
-        <div class="col-sm-9">
-            <input class="form-control" name="name" id="name" 
-                   type="text" required /> (required)
+        <!-- Form fields with Bootstrap classes -->
+        <div class="mb-3">
+            <label class="form-label" for="name">Name (required):</label>
+            <input class="form-control" name="name" id="name" type="text" required>
         </div>
-    </div>
-    <div class="form-group row">
-        <label class="col-sm-3 col-form-label" for="address">Address:</label>
-        <div class="col-sm-9">
-            <textarea class="form-control" name="address" id="address"
-                      cols="25" rows="4" ></textarea>
+        <div class="mb-3">
+            <label class="form-label" for="address">Address:</label>
+            <textarea class="form-control" name="address" id="address" rows="4"></textarea>
         </div>
-    </div>
-    <div class="form-group row">
-        <label class="col-sm-3 col-form-label" for="country">Country:</label>
-        <div class="col-sm-9">
-            <input class="form-control" name="country" id="country" type="text" />
+        <div class="mb-3">
+            <label class="form-label" for="country">Country:</label>
+            <input class="form-control" name="country" id="country" type="text">
         </div>
-    </div>
-    <div class="form-group row">
-        <label class="col-sm-3 col-form-label" for="phone">Phone:</label>
-        <div class="col-sm-9">
-            <input class="form-control" name="phone" id="phone" type="text" />
+        <div class="mb-3">
+            <label class="form-label" for="phone">Phone:</label>
+            <input class="form-control" name="phone" id="phone" type="text">
         </div>
-    </div>
-    <div class="form-group row">
-        <label class="col-sm-3 col-form-label" for="email">
-            Email Address:</label>
-        <div class="col-sm-9">
-            <input class="form-control" name="email" id="email" 
-                   type="email" required /> (required)
+        <div class="mb-3">
+            <label class="form-label" for="email">Email Address (required):</label>
+            <input class="form-control" name="email" id="email" type="email" required>
         </div>
-    </div>
-    <div class="form-group row">
-        <label class="col-sm-3 col-form-label" for="password">
-            Password:</label>
-        <div class="col-sm-9">
-            <input class="form-control" name="password" id="password" 
-                   type="password" required /> (required)
+        <div class="mb-3">
+            <label class="form-label" for="password">Password (required):</label>
+            <input class="form-control" name="password" id="password" type="password" required>
         </div>
-    </div>
-    <div class="form-group row">
-        <label class="col-sm-3 col-form-label" for="password2">
-            Retype Password:</label>
-        <div class="col-sm-9">
-            <input class="form-control" name="password2" id="password2" 
-                   type="password" required /> (required)
+        <div class="mb-3">
+            <label class="form-label" for="password2">Retype Password (required):</label>
+            <input class="form-control" name="password2" id="password2" type="password" required>
         </div>
-    </div>
-    <div class="form-group row">       
-        <div class="col-sm-9 offset-sm-3">
-            <button type="submit">Register</button>
+        <div class="mb-3 text-center">       
+            <button type="submit" class="btn btn-primary">Register</button>
         </div>
-    </div>
-</form>
+    </form>
 </div>
 <?php 
 // Include the Page Layout footer
