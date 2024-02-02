@@ -12,8 +12,6 @@ if($_POST) //Post Data received from Shopping cart page.
 	FROM product WHERE ProductID IN (SELECT ProductID FROM shopcartitem WHERE ShopCartID = ?)"; 
 	//Returns 'Available' if quantity is 0 and above after subtraction and 'OutOfStock' if quantity becomes negative after subtraction
 
-	echo "<h3 style='color:red;'>Unable to fulfill these orders:</h3> <br/>"; //Can Only be seen if order fails, displays header to alert user that order has failed
-
 	foreach($_SESSION['Items'] as $key=>$item) {
 
 		$intvalue = intval(json_encode($item["quantity"])); #Converting to int for sql comparison 
@@ -27,15 +25,22 @@ if($_POST) //Post Data received from Shopping cart page.
 				$pID = $row['ProductID'];
 				$pTitle = $row['ProductTitle'];
 				$quantityInStock = $row['Quantity'];
-				echo "Product $pID: <u><b>$pTitle</b></u> is out of stock! <br />";
-				echo "In stock: <b><u> $quantityInStock</u></b> | You ordered: <b><u> $intvalue </u></b> <br /><br />"; //Show current stock and user's order quantity
+				
+				// Enhanced "Out of Stock" notification with Bootstrap alert
+				echo "<div class='alert alert-warning' role='alert'>";
+				echo "<h4 class='alert-heading'>Out of Stock!</h4>";
+				echo "<p>Product $pID: <strong>$pTitle</strong> is currently out of stock.</p>";
+				echo "<p>Please return to your <a href='shoppingCart.php'>shopping cart</a> to amend your purchase. Thank you.</p>";
+				echo "<hr>";
+				echo "<p class='mb-0'>In stock: <strong>$quantityInStock</strong> | You ordered: <strong>$intvalue</strong></p>";
+				echo "</div>";
+				
 				$exit = true;
 			}
 		}
 	}
 
 	if ($exit == true){ //Display message and exit checkout process of any item is out of stock
-		echo "<b> Please return to <a href='shoppingCart.php'>shopping cart</a> to amend your purchase.<br /> </b>";
 		$stmt->close();
 		include("footer.php");
 		exit;
