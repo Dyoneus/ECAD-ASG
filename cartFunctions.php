@@ -37,12 +37,14 @@ function addItem() {
 		$row = $result->fetch_array();
 		$_SESSION["Cart"] = $row["ShopCartID"];
 	}
+
   	// If the ProductID exists in the shopping cart, 
   	// update the quantity, else add the item to the Shopping Cart.
   	$pid = $_POST["product_id"];
 	$quantity = $_POST["quantity"];
 	$qry = "SELECT Quantity FROM ShopCartItem WHERE ShopCartID = ? AND ProductID = ?";
 	//$qry = "SELECT * FROM ShopCartItem WHERE ShopCartID = ? AND ProductID = ?";
+
 	$stmt = $conn->prepare($qry);
 	$stmt->bind_param("ii", $_SESSION["Cart"], $pid); 
 	$stmt->execute();
@@ -57,14 +59,38 @@ function addItem() {
         $stmt->execute();
         $stmt->close();
     } else {
+		// Check if there is an offered price
+        $qryOfferedPrice = "SELECT Price, OfferedPrice FROM Product WHERE ProductID = ?";
+        $stmtOfferedPrice = $conn->prepare($qryOfferedPrice);
+        $stmtOfferedPrice->bind_param("i", $pid);
+        $stmtOfferedPrice->execute();
+        $resultOfferedPrice = $stmtOfferedPrice->get_result();
+        $rowOfferedPrice = $resultOfferedPrice->fetch_assoc();
+        $stmtOfferedPrice->close();
+
+        // Use the offered price if it is not null, otherwise use the regular price
+        $priceToUse = isset($rowOfferedPrice["OfferedPrice"]) ? $rowOfferedPrice["OfferedPrice"] : $rowOfferedPrice["Price"];
+
+        // Insert the item into the shopping cart with the correct price
+        $qry = "INSERT INTO ShopCartItem(ShopCartID, ProductID, Price, Name, Quantity)
+                SELECT ?, ?, ?, ProductTitle, ? FROM Product WHERE ProductID = ?";      
+        $stmt = $conn->prepare($qry);
+        $stmt->bind_param("iidii", $_SESSION["Cart"], $pid, $priceToUse, $quantity, $pid);
+        $stmt->execute();
+        $stmt->close();
+		/*
 		$qry = "INSERT INTO ShopCartItem(ShopCartID, ProductID, Price, Name, Quantity)
 				SELECT ?, ?, Price, ProductTitle, ? FROM Product WHERE ProductID = ?";		
 		$stmt = $conn->prepare($qry);
+		
 		//"iiii" - 3 integers
+		
 		$stmt->bind_param("iiii", $_SESSION["Cart"], $pid, $quantity, $pid);
 		$stmt->execute();
 		$stmt->close();
+		*/
 		$addNewItem = 1;	
+		
 	}
   	
 
