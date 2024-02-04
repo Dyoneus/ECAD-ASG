@@ -3,75 +3,79 @@ session_start(); // Detect the current session
 include("header.php"); // Include the Page Layout header
 ?>
 
-<div style="width:80%; margin:auto;"> <!-- Container -->
+<div style="width:90%; margin:auto;"> <!-- Container -->
 
     <form name="frmSearch" method="get" action="">
         <div class="mb-3 row"> <!-- 1st row -->
-            <div class="col-sm-9 offset-sm-3">
+            <div class="col-sm-6">
                 <span class="page-title">Product Search</span>
             </div>
         </div> <!-- End of 1st row -->
 
         <div class="mb-3 row"> <!-- 2nd row -->
-            <label for="keywords" class="col-sm-3 col-form-label">Product Title:</label>
+            <label for="keywords" class="col-sm-2 col-form-label" style="text-align:right;">Product Title / Description:</label>
             <div class="col-sm-6">
                 <input class="form-control" name="keywords" id="keywords" type="search" />
             </div>
         </div> <!-- End of 2nd row -->
 
         <div class="mb-3 row"> <!-- 3rd row -->
-    <label for="minPrice" class="col-sm-3 col-form-label">Min Price:</label>
-    <div class="col-sm-3">
+        <label for="minPrice" class="col-sm-2 col-form-label" style="text-align:right;">Min Price:</label>
+    <div class="col-sm-2">
         <input class="form-control" name="minPrice" id="minPrice" type="number" min="0" step="0.01" />
     </div>
-    <label for="maxPrice" class="col-sm-3 col-form-label">Max Price:</label>
-    <div class="col-sm-3">
-        <input class="form-control" name="maxPrice" id="maxPrice" type="number" min="0" step="0.01" />
-    </div>
-</div> <!-- End of 3rd row -->
+</div>
 
-<div class="mb-3 row"> <!-- 4th row -->
-    <div class="col-sm-9 offset-sm-3">
+    <div class="mb-3 row"> <!-- 4th row -->
+        <label for="maxPrice" class="col-sm-2 col-form-label" style="text-align:right;">Max Price:</label>
+        <div class="col-sm-2">
+            <input class="form-control" name="maxPrice" id="maxPrice" type="number" min="0" step="0.01" />
+        </div>   
+    </div> <!-- End of 4th row -->
+
+    <div class="mb-3 row"> <!-- 5th row -->
+        <label for="maxPrice" class="col-sm-2 col-form-label" style="text-align:right;"></label>
+        <div class="col-sm-2">
         <button type="submit">Search</button>
-    </div>
-</div> <!-- End of 4th row -->
+        </div>   
+    </div> <!-- End of 5th row -->
 
 </form>
 
 
     <?php
     include_once("mysql_conn.php");
-
+    
     if (isset($_GET["keywords"]) && trim($_GET['keywords']) != "" && isset($_GET['minPrice']) && trim($_GET['minPrice']) == "" && isset($_GET['maxPrice']) && trim($_GET['maxPrice']) == "") {
         // Search by title only
         $searchText = $conn->real_escape_string($_GET["keywords"]);
-        $qry = "SELECT ProductID, ProductTitle, ProductDesc FROM product 
+        $qry = "SELECT ProductID, ProductTitle, ProductDesc, Price FROM product 
                 WHERE ProductTitle LIKE '%$searchText%' OR ProductDesc LIKE '%$searchText%'";
     }
     elseif (isset($_GET["keywords"]) && trim($_GET['keywords']) == "" && isset($_GET['minPrice']) && isset($_GET['maxPrice']) && trim($_GET['maxPrice']) == "") {
         // Search by price range only
         $minPrice = floatval($_GET['minPrice']);
-        $qry = "SELECT ProductID, ProductTitle, ProductDesc FROM product 
+        $qry = "SELECT ProductID, ProductTitle, ProductDesc, Price FROM product 
                 WHERE Price >= $minPrice";
     }
     elseif (isset($_GET["keywords"]) && trim($_GET['keywords']) == "" && isset($_GET['minPrice']) && trim($_GET['minPrice']) == "" && isset($_GET['maxPrice'])) {
         // Search by price range only
         $maxPrice = floatval($_GET['maxPrice']);
-        $qry = "SELECT ProductID, ProductTitle, ProductDesc FROM product 
+        $qry = "SELECT ProductID, ProductTitle, ProductDesc, Price FROM product 
                 WHERE Price <= $maxPrice";
     }
     elseif (isset($_GET["keywords"]) && trim($_GET['keywords']) == "" && isset($_GET['minPrice']) && isset($_GET['maxPrice'])) {
         // Search by price range only
         $minPrice = floatval($_GET['minPrice']);
         $maxPrice = floatval($_GET['maxPrice']);
-        $qry = "SELECT ProductID, ProductTitle, ProductDesc FROM product 
+        $qry = "SELECT ProductID, ProductTitle, ProductDesc, Price FROM product 
                 WHERE Price BETWEEN $minPrice AND $maxPrice";
     }
     elseif (isset($_GET["keywords"]) && trim($_GET['keywords']) != "" && isset($_GET['minPrice']) && isset($_GET['maxPrice']) && trim($_GET['maxPrice']) == "") {
         // Search by title and price range
         $searchText = $conn->real_escape_string($_GET["keywords"]);
         $minPrice = floatval($_GET['minPrice']);
-        $qry = "SELECT ProductID, ProductTitle, ProductDesc FROM product 
+        $qry = "SELECT ProductID, ProductTitle, ProductDesc, Price FROM product 
                 WHERE (ProductTitle LIKE '%$searchText%' OR ProductDesc LIKE '%$searchText%') 
                 AND Price >= $minPrice";
     }
@@ -79,7 +83,7 @@ include("header.php"); // Include the Page Layout header
         // Search by title and price range
         $searchText = $conn->real_escape_string($_GET["keywords"]);
         $maxPrice = floatval($_GET['maxPrice']);
-        $qry = "SELECT ProductID, ProductTitle, ProductDesc FROM product 
+        $qry = "SELECT ProductID, ProductTitle, ProductDesc, Price FROM product 
                 WHERE (ProductTitle LIKE '%$searchText%' OR ProductDesc LIKE '%$searchText%') 
                 AND Price <= $maxPrice";
     }
@@ -89,7 +93,7 @@ include("header.php"); // Include the Page Layout header
         $searchText = $conn->real_escape_string($_GET["keywords"]);
         $minPrice = floatval($_GET['minPrice']);
         $maxPrice = floatval($_GET['maxPrice']);
-        $qry = "SELECT ProductID, ProductTitle, ProductDesc FROM product 
+        $qry = "SELECT ProductID, ProductTitle, ProductDesc, Price FROM product 
                 WHERE (ProductTitle LIKE '%$searchText%' OR ProductDesc LIKE '%$searchText%') 
                 AND (Price >= $minPrice AND Price <= $maxPrice)";
     }
@@ -108,12 +112,12 @@ include("header.php"); // Include the Page Layout header
         if ($result->num_rows > 0) {
             echo "<span style='font-weight: bold;'>Search results:</span>";
             echo "<table class='table'>";
-            echo "<thead><tr><th>Product Title</th><th>Product Description</th></tr></thead>";
+            echo "<thead><tr><th>Product Title</th><th>Product Description</th><th>Price</th></tr></thead>";
             echo "<tbody>";
     
             while ($row = $result->fetch_array()) {
                 $product = "productDetails.php?pid=$row[ProductID]";
-                echo "<tr><td><a href='$product'>$row[ProductTitle]</a></td><td>$row[ProductDesc]</td></tr>";
+                echo "<tr><td><a href='$product'>$row[ProductTitle]</a></td><td>$row[ProductDesc]</td><td>S$ $row[Price]</td></tr>";
             }
     
             echo "</tbody></table>";
